@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "jsx": "react",
+    "jsxFactory": "h",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "allowJs": false,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "target": "esnext"
+  }
+}

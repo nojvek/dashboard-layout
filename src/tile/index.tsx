@@ -2,39 +2,79 @@
 import {h, Component} from 'preact';
 import './index.less';
 
-interface TileState {
-  time: number;
+export interface TileInfo {
+  id: string;
 }
 
-export class Tile extends Component<{}, TileState> {
-  private timer: any;
+interface TileState {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+interface TileProps {
+  tile: TileInfo;
+}
+
+export class Tile extends Component<TileProps, TileState> {
+  tileEl: HTMLElement;
+  lastClientX: number;
+  lastClientY: number;
 
   constructor() {
     super();
-    // set initial time:
     this.state = {
-      time: Date.now(),
+      x: 0,
+      y: 20,
+      w: 100,
+      h: 100,
     };
   }
 
-  componentDidMount() {
-    // update time every second
-    this.timer = setInterval(() => {
-      this.setState({time: Date.now()});
-    }, 1000);
-  }
+  handleTileInsert = (el: HTMLElement) => {
+    this.tileEl = el;
+    console.log(`tileInsert`, el.textContent);
+  };
 
-  componentWillUnmount() {
-    // stop when not renderable
-    clearInterval(this.timer);
-  }
+  handleTileMouseDown = (ev: MouseEvent) => {
+    console.log(ev.type);
+    this.lastClientX = ev.clientX;
+    this.lastClientY = ev.clientY;
+    document.addEventListener(`mousemove`, this.handleTileMouseMove);
+    document.addEventListener(`mouseup`, this.handleTileMouseUp);
+    // document.addEventListener(`mouseout`, this.handleTileMouseUp);
+  };
+
+  handleTileMouseUp = (ev: MouseEvent) => {
+    document.removeEventListener(`mousemove`, this.handleTileMouseMove);
+    document.removeEventListener(`mouseup`, this.handleTileMouseUp);
+    // document.removeEventListener(`mouseout`, this.handleTileMouseUp);
+    console.log(ev.type);
+  };
+
+  handleTileMouseMove = (ev: MouseEvent) => {
+    console.log(ev.type);
+    this.setState({x: this.state.x + ev.clientX - this.lastClientX});
+    this.setState({y: this.state.y + ev.clientY - this.lastClientY});
+    this.lastClientX = ev.clientX;
+    this.lastClientY = ev.clientY;
+  };
 
   render(props, state) {
-    let time = new Date(state.time).toLocaleTimeString();
     return (
-      <div class="Tile">
-        <span>{time} so fast</span>
-        <div>stuff</div>
+      <div
+        ref={this.handleTileInsert}
+        class="Tile"
+        style={{
+          left: `${state.x}px`,
+          top: `${state.y}px`,
+          width: `${state.w}px`,
+          height: `${state.h}px`,
+        }}
+        onMouseDown={this.handleTileMouseDown}
+      >
+        <span>{props.tile.id}</span>
       </div>
     );
   }

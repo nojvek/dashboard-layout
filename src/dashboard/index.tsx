@@ -1,9 +1,9 @@
 import {h, Component} from 'preact';
-import {Tile} from '../tile';
+import {Tile, TileInfo} from '../tile';
 import './index.less';
 
 interface DashboardState {
-  tiles: any[];
+  tiles: TileInfo[];
 }
 
 export class Dashboard extends Component<{}, DashboardState> {
@@ -15,8 +15,11 @@ export class Dashboard extends Component<{}, DashboardState> {
   }
 
   handleAddTileBtnClick = ev => {
-    this.state.tiles.push({});
-    this.setState({tiles: this.state.tiles});
+    const tiles = this.state.tiles;
+    tiles.push({
+      id: tiles.length.toString(),
+    });
+    this.setState({tiles});
   };
 
   render(props, state) {
@@ -28,7 +31,7 @@ export class Dashboard extends Component<{}, DashboardState> {
 
         <div class="tiles">
           {state.tiles.map(tile => (
-            <Tile />
+            <Tile tile={tile} />
           ))}
         </div>
       </div>

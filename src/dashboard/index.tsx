@@ -7,7 +7,17 @@ interface DashboardState {
 }
 
 export class Dashboard extends Component<{}, DashboardState> {
-  handleAddTileBtnClick = ev => {};
+  constructor() {
+    super();
+    this.state = {
+      tiles: [],
+    };
+  }
+
+  handleAddTileBtnClick = ev => {
+    this.state.tiles.push({});
+    this.setState({tiles: this.state.tiles});
+  };
 
   render(props, state) {
     return (
@@ -17,8 +27,9 @@ export class Dashboard extends Component<{}, DashboardState> {
         </div>
 
         <div class="tiles">
-          <Tile />
-          <Tile />
+          {state.tiles.map(tile => (
+            <Tile />
+          ))}
         </div>
       </div>
     );

@@ -11,11 +11,14 @@ interface TileState {
   y: number;
   w: number;
   h: number;
+  isDragging: boolean;
 }
 
 interface TileProps {
   tile: TileInfo;
 }
+
+const SIZE = 200;
 
 export class Tile extends Component<TileProps, TileState> {
   tileEl: HTMLElement;
@@ -26,9 +29,10 @@ export class Tile extends Component<TileProps, TileState> {
     super();
     this.state = {
       x: 0,
-      y: 20,
-      w: 100,
-      h: 100,
+      y: 0,
+      w: SIZE - 1, // because border
+      h: SIZE - 1,
+      isDragging: false,
     };
   }
 
@@ -38,23 +42,25 @@ export class Tile extends Component<TileProps, TileState> {
   };
 
   handleTileMouseDown = (ev: MouseEvent) => {
-    console.log(ev.type);
     this.lastClientX = ev.clientX;
     this.lastClientY = ev.clientY;
+    this.setState({isDragging: true});
     document.addEventListener(`mousemove`, this.handleTileMouseMove);
     document.addEventListener(`mouseup`, this.handleTileMouseUp);
-    // document.addEventListener(`mouseout`, this.handleTileMouseUp);
   };
 
   handleTileMouseUp = (ev: MouseEvent) => {
     document.removeEventListener(`mousemove`, this.handleTileMouseMove);
     document.removeEventListener(`mouseup`, this.handleTileMouseUp);
-    // document.removeEventListener(`mouseout`, this.handleTileMouseUp);
+    console.log(this.state);
+    this.setState({x: Math.round(this.state.x / SIZE) * SIZE});
+    this.setState({y: Math.round(this.state.y / SIZE) * SIZE});
+    this.setState({isDragging: false});
+    console.log(this.state);
     console.log(ev.type);
   };
 
   handleTileMouseMove = (ev: MouseEvent) => {
-    console.log(ev.type);
     this.setState({x: this.state.x + ev.clientX - this.lastClientX});
     this.setState({y: this.state.y + ev.clientY - this.lastClientY});
     this.lastClientX = ev.clientX;
@@ -65,10 +71,9 @@ export class Tile extends Component<TileProps, TileState> {
     return (
       <div
         ref={this.handleTileInsert}
-        class="Tile"
+        class={[`Tile`, state.isDragging ? `dragging` : ``].filter(Boolean).join(` `)}
         style={{
-          left: `${state.x}px`,
-          top: `${state.y}px`,
+          transform: `translate(${state.x}px, ${state.y}px)`,
           width: `${state.w}px`,
           height: `${state.h}px`,
         }}
